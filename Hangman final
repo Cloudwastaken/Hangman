@@ -1,0 +1,84 @@
+# Melo, Mateo
+# 04/30/2021
+# I am making a hangman game
+
+import sys
+from helper import display_hangman, get_word
+
+def display_game_state(error_message, num_tries_left, guessed_letters, word_to_complete):
+# Display game state
+    print('\033[H\033[J')
+    print("Hello and welcome to my hangman game! 🧍‍♂️")
+    print(error_message, file=sys.stderr)
+    display_hangman(num_tries_left)
+    print(f"You have {num_tries_left} tries left")
+    print(f"Letter guessed: {' '.join(sorted(guessed_letters))}")
+    print()
+    print(word_to_complete)
+    print()
+
+
+def main():
+    #Set up our variables
+    word_to_guess = get_word()
+    word_to_complete = "_ " * len(word_to_guess)
+    error_message = ""
+    num_tries_left = 6
+    guessed_letters = []
+    is_word_guessed = False
+
+    
+    while num_tries_left > 0 and not is_word_guessed:
+        display_game_state(error_message,num_tries_left,guessed_letters, word_to_complete)
+    
+        # Get a letter
+        guess = input("Please enter a letter: ")
+
+        # Test whether the input is valid 
+        # Test if input is one character
+        if len(guess) > 1:
+            error_message = "Please only input one letter at a time"
+            continue
+        # Test if input is a letter 
+        elif not guess.isalpha():
+            error_message = "Please only input letters"
+            continue
+        # See if we've guessed the letter
+        elif guess in guessed_letters:
+            error_message = "You already guessed this letter"
+            continue
+
+
+
+        # Add our guess to our list of guesses    
+        guessed_letters.append(guess)
+
+        # Check if the guess is actually in the word
+        if guess not in word_to_guess:
+            num_tries_left = num_tries_left - 1
+
+        # Update our word_to_complete
+        word_to_complete = ""
+        for letter in word_to_guess:
+            if letter in guessed_letters:
+                word_to_complete = word_to_complete + letter + " "
+            else:
+                word_to_complete = word_to_complete + "_ "
+
+        # Check if we've guessed the word 
+        if "_" not in word_to_complete:
+            is_word_guessed = True
+
+    display_game_state(error_message,num_tries_left,guessed_letters, word_to_complete)
+
+    # Print the final message
+    if is_word_guessed:
+        print("Congrats that was some pretty good guessing!")
+    else: 
+        print(f"Oof, that was a tough one nice try tho! Your word was {word_to_guess}")
+
+if __name__ == "__main__":
+    main()
+
+
+
